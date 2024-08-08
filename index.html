@@ -60,48 +60,48 @@ document.getElementById("messageInput").value = "";
 }
 
 // Get a reference to the Firebase database
-//var database = firebase.database();
+var database = firebase.database();
 
 // Reference the "messages" node in the database
-//var messagesRef = database.ref("messages");
+var messagesRef = database.ref("messages");
 
 // Listen for changes in the messages data
-//messagesRef.on("value", function(snapshot) {
+messagesRef.on("value", function(snapshot) {
 // Clear the existing messages in the <ul> element
-//var messageList = document.getElementById("messageList");
-//messageList.innerHTML = "";
+var messageList = document.getElementById("messageList");
+messageList.innerHTML = "";
 
 // Iterate over the snapshot of messages and append them to the <ul> element
-//snapshot.forEach(function(childSnapshot) {
-//  var messageKey = childSnapshot.key;
-//  var messageData = childSnapshot.val().message;
+snapshot.forEach(function(childSnapshot) {
+  var messageKey = childSnapshot.key;
+  var messageData = childSnapshot.val().message;
 
   // Create a <li> element for each message
-  //var li = document.createElement("li");
-  //li.style.display = "flex";
+  var li = document.createElement("li");
+  li.style.display = "flex";
 
   // Create a delete button for each message
-  //var deleteButton = document.createElement("button");
-  //deleteButton.textContent = "-";
-  //deleteButton.style.marginRight = "10px";
-  //deleteButton.addEventListener("click", function() {
-  //  deleteMessage(messageKey);
-  //});
+  var deleteButton = document.createElement("button");
+  deleteButton.textContent = "-";
+  deleteButton.style.marginRight = "10px";
+  deleteButton.addEventListener("click", function() {
+    deleteMessage(messageKey);
+  });
 
   // Append the delete button to the <li> element
-  //li.appendChild(deleteButton);
+  li.appendChild(deleteButton);
 
   // Create a span element for the message text
-  //var span = document.createElement("span");
-  //span.textContent = messageData;
+  var span = document.createElement("span");
+  span.textContent = messageData;
 
   // Append the span element to the <li>
-  //li.appendChild(span);
+  li.appendChild(span);
 
   // Append the <li> element to the <ul>
-  //messageList.appendChild(li);
-//});
-//});
+  messageList.appendChild(li);
+});
+});
 
 
 // Function to delete a message
