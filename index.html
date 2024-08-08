@@ -1,8 +1,10 @@
+
+
 <script>
-  if (screen.width <= 768) {  // Adjust the screen width as per your needs
-      document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=2');
-      // Adjust the initial-scale value as per your needs
-  }
+    if (screen.width <= 768) {  // Adjust the screen width as per your needs
+        document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=2');
+        // Adjust the initial-scale value as per your needs
+    }
 </script>
 
 <!-- Firebase JavaScript SDK -->
@@ -13,13 +15,13 @@
 <script>
 // Replace this with your actual Firebase configuration
 var firebaseConfig = {
-  apiKey: "AIzaSyCMRFY1FCRVLWZXl8EXKAJefBsyloaE4os",
-  authDomain: "notes-f8588.firebaseapp.com",
-  databaseURL: "https://notes-f8588-default-rtdb.europe-west1.firebasedatabase.app/",
-  projectId: "notes-f8588",
-  storageBucket: "notes-f8588.appspot.com",
-  messagingSenderId: "106653771180",
-  appId: "1:106653771180:web:f9414f2731fb9953664609"
+apiKey: "AIzaSyCMRFY1FCRVLWZXl8EXKAJefBsyloaE4os",
+authDomain: "notes-f8588.firebaseapp.com",
+databaseURL: "https://notes-f8588-default-rtdb.europe-west1.firebasedatabase.app/",
+projectId: "notes-f8588",
+storageBucket: "notes-f8588.appspot.com",
+messagingSenderId: "106653771180",
+appId: "1:106653771180:web:f9414f2731fb9953664609"
 };
 
 // Initialize Firebase
@@ -27,8 +29,10 @@ firebase.initializeApp(firebaseConfig);
 </script>
 
 <br>
-<input type="text" id="messageInput" placeholder="Enter your message" style="margin-top: 40px; margin-left: 20px;">
-<button onclick="sendMessage()">Send</button>
+<textarea type="text" id="messageInput" placeholder="Say anything you want, good or bad, it's anonymous!" style="width: 400px; height: 90px; margin-top: 40px; margin-left: 20px;">
+</textarea>
+
+  <br><br><button onclick="sendMessage()" style="margin-left: 20px;">Send</button>
 
 <ul id="messageList" style="margin-top: 40px; margin-left: 20px;"></ul>
 
@@ -36,54 +40,97 @@ firebase.initializeApp(firebaseConfig);
 
 <p id="messageCounter" style="margin-top: 20px; margin-left: 20px;">Messages: 0</p> <!-- This will display the message count -->
 
+
 <script>
 function sendMessage() {
-  // Get the message from the input field
-  var message = document.getElementById("messageInput").value;
+// Get the message from the input field
+var message = document.getElementById("messageInput").value;
 
-  // Get a reference to the Firebase database
-  var database = firebase.database();
+// Get a reference to the Firebase database
+var database = firebase.database();
 
-  // Generate a unique key for the message
-  var messageKey = database.ref().child("messages").push().key;
+// Generate a unique key for the message
+var messageKey = database.ref().child("messages").push().key;
 
-  // Create a data object with only the message field
-  var messageData = {
-      message: message
-  };
+// Create a data object with only the message field
+var messageData = {
+  message: message
+};
 
-  // Save the message to the Firebase database
-  var updates = {};
-  updates["/messages/" + messageKey] = messageData;
-  database.ref().update(updates).then(function() {
-      // Clear the input field
-      document.getElementById("messageInput").value = "";
 
-      // Display the "Message received" text
-      document.getElementById("statusMessage").textContent = "Message received";
+        // Display the "Message received" text
+        document.getElementById("statusMessage").textContent = "Response received, thanks!";
 
-      // Update the message counter (this will be handled by the listener below)
 
-  }).catch(function(error) {
-      // Handle any errors that occur during the update
-      console.error("Error saving message:", error);
-  });
+// Save the message to the Firebase database
+var updates = {};
+updates["/messages/" + messageKey] = messageData;
+database.ref().update(updates);
+
+// Clear the input field
+document.getElementById("messageInput").value = "";
 }
+
+// Get a reference to the Firebase database
+var database = firebase.database();
+
+// Reference the "messages" node in the database
+var messagesRef = database.ref("messages");
+
+// Listen for changes in the messages data
+messagesRef.on("value", function(snapshot) {
+// Clear the existing messages in the <ul> element
+var messageList = document.getElementById("messageList");
+messageList.innerHTML = "";
+
+
+// Iterate over the snapshot of messages and append them to the <ul> element
+snapshot.forEach(function(childSnapshot) {
+  var messageKey = childSnapshot.key;
+  var messageData = childSnapshot.val().message;
+
+  // Create a <li> element for each message
+  var li = document.createElement("li");
+  li.style.display = "flex";
+
+  // Create a delete button for each message
+  var deleteButton = document.createElement("button");
+  deleteButton.textContent = "-";
+  deleteButton.style.marginRight = "10px";
+  deleteButton.addEventListener("click", function() {
+    deleteMessage(messageKey);
+  });
+
+  // Append the delete button to the <li> element
+  li.appendChild(deleteButton);
+
+  // Create a span element for the message text
+  var span = document.createElement("span");
+  span.textContent = messageData;
+
+  // Append the span element to the <li>
+  li.appendChild(span);
+
+  // Append the <li> element to the <ul>
+  //messageList.appendChild(li);
+});
+});
+
 
 // Listen for changes in the "messages" node to update the counter
 var messagesRef = firebase.database().ref("messages");
 messagesRef.on("value", function(snapshot) {
-  // Update the message counter
-  var messageCount = snapshot.numChildren();
-  document.getElementById("messageCounter").textContent = "Messages: " + messageCount;
-});
+    // Update the message counter
+    var messageCount = snapshot.numChildren();
+    document.getElementById("messageCounter").textContent = "Responses: " + messageCount;
+  });
 
 // Function to delete a message
 function deleteMessage(messageKey) {
-  // Get a reference to the specific message in the database
-  var messageRef = firebase.database().ref("messages/" + messageKey);
+// Get a reference to the specific message in the database
+var messageRef = database.ref("messages/" + messageKey);
 
-  // Remove the message from the database
-  messageRef.remove();
+// Remove the message from the database
+messageRef.remove();
 }
 </script>
