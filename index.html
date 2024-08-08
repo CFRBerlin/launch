@@ -39,6 +39,8 @@ function sendMessage() {
 // Get the message from the input field
 var message = document.getElementById("messageInput").value;
 
+
+
 // Get a reference to the Firebase database
 var database = firebase.database();
 
@@ -49,6 +51,11 @@ var messageKey = database.ref().child("messages").push().key;
 var messageData = {
   message: message
 };
+
+
+        // Display the "Message received" text
+        document.getElementById("statusMessage").textContent = "Message received";
+
 
 // Save the message to the Firebase database
 var updates = {};
@@ -70,6 +77,9 @@ messagesRef.on("value", function(snapshot) {
 // Clear the existing messages in the <ul> element
 var messageList = document.getElementById("messageList");
 messageList.innerHTML = "";
+
+      // Display the "Message received" text
+      document.getElementById("statusMessage").textContent = "Message received. Thanks!";
 
 // Iterate over the snapshot of messages and append them to the <ul> element
 snapshot.forEach(function(childSnapshot) {
@@ -103,6 +113,14 @@ snapshot.forEach(function(childSnapshot) {
 });
 });
 
+
+// Listen for changes in the "messages" node to update the counter
+var messagesRef = firebase.database().ref("messages");
+messagesRef.on("value", function(snapshot) {
+    // Update the message counter
+    var messageCount = snapshot.numChildren();
+    document.getElementById("messageCounter").textContent = "Messages: " + messageCount;
+  });
 
 // Function to delete a message
 function deleteMessage(messageKey) {
